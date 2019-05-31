@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>改善用</title>
+    <style>
+        #pwdLvSpan{display: inline-block;width: 100px;height:5px;background: #c3c3c3}
+        #pwdLvSpan i{display: block;background: green;height: 5px;width: 0;}
+    </style>
+</head>
+<body>
+    <form method="post" action="" onsubmit="return eg.regCheck();">
+        <input type="hidden" name="" id="errnum" value="0"/>
+        account: <input type="text" name="" id="userid" /><br/><br/>
+        password: <input type="password" name="" id="userpwd" />密码强度<span id="pwdLvSpan"><i id="pwdLv"></i>></span><br/><br/>
+        again: <input type="password" name="" id="userpwd2" /><br/><br/>
+        sex: <input type="radio" name="sex" value="1" checked="checked"/>
+        male: <input type="radio" name="sex" value="0" />female <br/><br/>
+        age: <select name="" id="age">
+            <option value="0" selected="selected">select your age</option>
+            <option value="1">under 18 years old</option>
+            <option value="2">18-24 years old</option>
+            <option value="3">24-30 years old</option>
+            <option value="4">30-35 years old</option>
+            <option value="5">over 30 years old</option>
+    </select><br/><br/>
+        likes: <input type="checkbox" name="like" value="1" class="like"/>
+        surfing: <input type="checkbox" name="like" value="2" class="like"/>
+        shopping: <input type="checkbox" name="like" value="3" class="like"/>
+        go to the cinema: <input type="checkbox" name="like" value="4" class="like"/>
+        other things <br/><br/>
+        introduce: <textarea name="" rows="4" cols="18" id="about"></textarea>
+        <br/><br/>
+        E-mail Adress:<input type="text" name="" id="email" /><br/><br/>
+        <input type="submit" value="register" id="regBtn"/>
+        <input type="button" value="unlock" onclick="eg.unlock()" style="display:none;" id="regUnlock"/>
+    </form>
+    <script>
+        var eg = {};
+        //声明一个对象，当作命名空间使用
+        //定义一个公共函数来获取指定id元素的值，减少代码量，提高代码复用率
+        eg.$ = function(id){
+            return document.getElementById(id);
+        };
+        //定义一个公共函数来获取指定class名称的元素集合，能兼容各浏览器
+        eg.getElementsByClassName = function(className, element) {
+            if (document.getElementsByClassName){
+                return (element || document).getElementsByClassName(className);
+            }
+            var children = (element || document).getElementsByTagName('*');
+            var elements = new Array();
+
+            for (var i = 0; i < children.length; i++){
+                var child = children[i];
+                var classNames = child.className.split(' ');
+                for (var j = 0; j < classNames.length; j++){
+                    elements.push(child);
+                    break;
+                }
+            }
+            return elements;
+        };
+        eg.regCheck = function(){
+            var uid = eg.$("userid");
+            var upwd = eg.$("userpwd");
+            var upwd2 = eg.$("userpwd2");
+            if (uid.value == ''){
+                alert('account can`t be empty.');
+                eg.err();
+                return false;
+            }
+            if (upwd.value == ''){
+                alert('password can`t be empty.');
+                eg.err();
+                return false;
+            }
+            if (upwd.value != upwd2.value){
+                alert('password doesn`t match.');
+                eg.err();
+                return false;
+            }
+            var about = eg.$("about");
+            if (about.value.length>60){
+                alert('introduce is too long');
+                eg.err();
+                return false;
+            }
+            var age = eg.$("age");
+            if (age.value == "0"){
+                alert('select your age');
+                eg.err();
+                return false;
+            }
+            var likes = document.getElementsByClassName("like");
+            var likeNum = 0;
+            for (var n = 0;n<likes.length;n++)
+            {
+                if (likes[n].checked){
+                    likeNum++;
+                }
+            }
+            if (likeNum == 0){
+                alert('one likes should be selected');
+                eg.err();
+            }
+            return true;
+        };
+        eg.err = function(){
+            var el = eg.$("errnum");
+            var old = el.value;
+            el.value = parseInt(old) + 1;
+            //把字符串换为整数+1，并保存起来
+            eg.lock();
+        };
+        eg.lock = function(){
+            var err = eg.$("errnum");
+            if (parseInt(err.value) > 2){
+                eg.$("regBtn").disabled = true;
+                //输错三次，锁定
+                eg.$("regUnlock").style.display="block";
+                //同时显示解锁按钮
+            }
+        };
+        eg.unlock = function(){
+          eg.$("regBtn").disabled = false;
+          eg.$("regUnlock").style.display="none"
+        };
+    </script>
+</body>
+</html>
